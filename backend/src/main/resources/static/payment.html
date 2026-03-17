@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getham Hotel | Payment</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .payment-container {
+            max-width: 500px;
+            margin: 150px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .payment-option:hover,
+        .payment-option.active {
+            border-color: var(--color-primary);
+            background: #fdfaf5;
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <header class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span class="logo-text">Getham<span
+                        class="logo-accent">Hotel</span></span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="#" class="nav-link" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="payment-container">
+        <h2>Payment Details</h2>
+        <p style="margin: 20px 0; font-size: 1.2rem;">Amount Due: $<strong id="due-amount">0.00</strong></p>
+
+        <div class="payment-options">
+            <div class="payment-option active" onclick="selectType('CARD', this)">Credit Card</div>
+            <div class="payment-option" onclick="selectType('UPI', this)">UPI</div>
+            <div class="payment-option" onclick="selectType('CASH', this)">Cash at Desk</div>
+        </div>
+
+        <button onclick="processPayment()" class="btn btn-primary" style="width:100%">Pay Now</button>
+        <p id="payment-msg" style="margin-top: 15px;"></p>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const bookingId = localStorage.getItem('paymentBookingId');
+        const amount = localStorage.getItem('paymentAmount');
+        let selectedType = 'CARD';
+
+        if (!bookingId) window.location.href = 'index.html';
+        document.getElementById('due-amount').innerText = amount;
+
+        function selectType(type, el) {
+            selectedType = type;
+            document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        async function processPayment() {
+            try {
+                const res = await fetch('/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    },
+                    body: JSON.stringify({ bookingId, amount, paymentType: selectedType, status: 'PENDING' })
+                });
+
+                if (res.ok) {
+                    const msg = document.getElementById('payment-msg');
+                    msg.innerHTML = "<span style='color:green; font-weight:bold;'>Payment Successful! Redirecting...</span>";
+                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                } else {
+                    document.getElementById('payment-msg').innerHTML = "<span style='color:red'>Payment Failed.</span>";
+                }
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+
+</html>

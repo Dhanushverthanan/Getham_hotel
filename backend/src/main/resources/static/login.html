@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getham Hotel | Login</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 40px;
+        }
+
+        .auth-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-card h2 {
+            margin-bottom: 20px;
+            color: var(--color-bg-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: var(--font-body);
+        }
+
+        .auth-switch {
+            margin-top: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--color-primary);
+        }
+
+        .error-msg {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .success-msg {
+            color: green;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <!-- Navbar (Simplified) -->
+    <header class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span class="logo-text">Getham<span
+                        class="logo-accent">Hotel</span></span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="rooms.html" class="nav-link">Rooms</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-card" id="login-box">
+            <h2>Welcome Back</h2>
+            <div id="login-error" class="error-msg"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
+            </form>
+            <div class="auth-switch" onclick="toggleAuth()">Don't have an account? Register</div>
+        </div>
+
+        <div class="auth-card" id="register-box" style="display:none;">
+            <h2>Create Account</h2>
+            <div id="register-error" class="error-msg"></div>
+            <div id="register-success" class="success-msg"></div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="reg-username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Role Code (Optional)</label>
+                    <input type="text" id="reg-role" placeholder="Leave empty for USER">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Register</button>
+            </form>
+            <div class="auth-switch" onclick="toggleAuth()">Already have an account? Login</div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        function toggleAuth() {
+            const loginBox = document.getElementById('login-box');
+            const registerBox = document.getElementById('register-box');
+            if (loginBox.style.display === 'none') {
+                loginBox.style.display = 'block';
+                registerBox.style.display = 'none';
+            } else {
+                loginBox.style.display = 'none';
+                registerBox.style.display = 'block';
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value;
+            const p = document.getElementById('login-password').value;
+
+            try {
+                const res = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('jwt', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('userId', data.id);
+                    window.location.href = data.role === 'ADMIN' ? 'admin.html' : 'index.html';
+                } else {
+                    const err = document.getElementById('login-error');
+                    err.innerText = "Invalid credentials";
+                    err.style.display = 'block';
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('reg-username').value;
+            const p = document.getElementById('reg-password').value;
+            let role = document.getElementById('reg-role').value;
+            if (role !== 'ADMIN') role = 'USER';
+
+            try {
+                const res = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p, role: role })
+                });
+                if (res.ok) {
+                    document.getElementById('register-success').innerText = "Registration successful! You can now login.";
+                    document.getElementById('register-success').style.display = 'block';
+                    document.getElementById('register-error').style.display = 'none';
+                    setTimeout(() => toggleAuth(), 2000);
+                } else {
+                    const err = document.getElementById('register-error');
+                    err.innerText = "Error registering user";
+                    err.style.display = 'block';
+                }
+            } catch (e) { console.error(e); }
+        });
+    </script>
+</body>
+
+</html>

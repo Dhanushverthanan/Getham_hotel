@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getham Hotel | Admin Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-container {
+            max-width: 1000px;
+            margin: 120px auto 50px;
+            padding: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel h3 {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <header class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span class="logo-text">Getham<span
+                        class="logo-accent">Admin</span></span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="#" class="nav-link" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container admin-container">
+        <h2 style="margin-bottom: 30px;">Admin Dashboard</h2>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <h3>Add New Room</h3>
+                <form id="add-room-form">
+                    <div class="form-group">
+                        <label>Room Number</label>
+                        <input type="text" id="r-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Room Type</label>
+                        <input type="text" id="r-type" required placeholder="e.g. Deluxe">
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" id="r-price" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Add Room</button>
+                    <p id="room-msg" style="margin-top: 10px; font-size:12px;"></p>
+                </form>
+
+                <h3 style="margin-top: 40px;">Delete Room</h3>
+                <form id="del-room-form">
+                    <div class="form-group">
+                        <label>Room ID</label>
+                        <input type="number" id="del-id" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline"
+                        style="width:100%; color:red; border-color:red;">Delete Room</button>
+                    <p id="del-msg" style="margin-top: 10px; font-size:12px;"></p>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h3>Recent Bookings</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Room ID</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-table">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 40px;">Payments</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Booking ID</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-table">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('role');
+            if (role !== 'ADMIN') {
+                alert('Access Denied');
+                window.location.href = 'index.html';
+            }
+            loadData();
+        });
+
+        async function loadData() {
+            const token = localStorage.getItem('jwt');
+            const headers = { 'Authorization': 'Bearer ' + token };
+
+            try {
+                // Bookings
+                const bRes = await fetch('/admin/bookings', { headers });
+                if (bRes.ok) {
+                    const bookings = await bRes.json();
+                    document.getElementById('bookings-table').innerHTML = bookings.map(b =>
+                        `<tr><td>${b.id}</td><td>${b.userId}</td><td>${b.roomId}</td><td>$${b.totalPrice}</td><td>${b.status}</td></tr>`
+                    ).join('');
+                }
+
+                // Payments
+                const pRes = await fetch('/payment', { headers });
+                if (pRes.ok) {
+                    const payments = await pRes.json();
+                    document.getElementById('payments-table').innerHTML = payments.map(p =>
+                        `<tr><td>${p.id}</td><td>${p.bookingId}</td><td>$${p.amount}</td><td>${p.paymentType}</td><td>${p.status}</td></tr>`
+                    ).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('add-room-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                number: document.getElementById('r-number').value,
+                type: document.getElementById('r-type').value,
+                price: parseFloat(document.getElementById('r-price').value),
+                available: true
+            };
+            try {
+                const res = await fetch('/rooms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jwt') },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    document.getElementById('room-msg').innerHTML = "<span style='color:green'>Room added!</span>";
+                    document.getElementById('add-room-form').reset();
+                } else document.getElementById('room-msg').innerHTML = "<span style='color:red'>Failed info.</span>";
+            } catch (e) { }
+        });
+
+        document.getElementById('del-room-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('del-id').value;
+            try {
+                const res = await fetch('/rooms/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (res.ok) {
+                    document.getElementById('del-msg').innerHTML = "<span style='color:green'>Room deleted!</span>";
+                    document.getElementById('del-room-form').reset();
+                } else document.getElementById('del-msg').innerHTML = "<span style='color:red'>Failed/Not Found.</span>";
+            } catch (e) { }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getham Hotel | Booking</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .booking-container {
+            max-width: 600px;
+            margin: 150px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: var(--font-body);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <header class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span class="logo-text">Getham<span
+                        class="logo-accent">Hotel</span></span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="rooms.html" class="nav-link">Rooms</a>
+                <a href="#" class="nav-link" id="nav-logout" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="booking-container">
+        <h2 style="margin-bottom:20px; color:var(--color-bg-dark)">Complete Your Booking</h2>
+        <div id="booking-msg" style="margin-bottom:15px;"></div>
+        <form id="booking-form">
+            <div class="form-group">
+                <label>Check In Date</label>
+                <input type="date" id="checkin" required>
+            </div>
+            <div class="form-group">
+                <label>Check Out Date</label>
+                <input type="date" id="checkout" required>
+            </div>
+            <p style="margin-bottom: 20px; font-weight: bold;">Est. Total: $<span id="total-price">0</span></p>
+            <button type="submit" class="btn btn-primary" style="width:100%">Confirm Booking</button>
+        </form>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const roomId = localStorage.getItem('bookingRoomId');
+        const pricePerNight = localStorage.getItem('bookingRoomPrice');
+        const userId = localStorage.getItem('userId');
+
+        if (!roomId || !userId) {
+            window.location.href = 'rooms.html';
+        }
+
+        document.getElementById('checkout').addEventListener('change', calculateTotal);
+        document.getElementById('checkin').addEventListener('change', calculateTotal);
+
+        function calculateTotal() {
+            const inDate = new Date(document.getElementById('checkin').value);
+            const outDate = new Date(document.getElementById('checkout').value);
+            if (inDate && outDate && outDate > inDate) {
+                const diffTime = Math.abs(outDate - inDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('total-price').innerText = (diffDays * pricePerNight).toFixed(2);
+            } else {
+                document.getElementById('total-price').innerText = "0";
+            }
+        }
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const checkIn = document.getElementById('checkin').value;
+            const checkOut = document.getElementById('checkout').value;
+            const total = document.getElementById('total-price').innerText;
+
+            if (total === "0" || !total) { alert("Invalid dates"); return; }
+
+            try {
+                const res = await fetch('/booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    },
+                    body: JSON.stringify({ userId, roomId, checkIn, checkOut, totalPrice: total, status: 'CONFIRMED' })
+                });
+
+                if (res.ok) {
+                    const booking = await res.json();
+                    localStorage.setItem('paymentBookingId', booking.id);
+                    localStorage.setItem('paymentAmount', total);
+                    window.location.href = 'payment.html';
+                } else {
+                    document.getElementById('booking-msg').innerHTML = "<span style='color:red'>Booking failed.</span>";
+                }
+            } catch (e) { console.error(e); }
+        });
+    </script>
+</body>
+
+</html>

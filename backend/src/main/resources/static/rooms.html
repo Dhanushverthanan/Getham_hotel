@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getham Hotel | Rooms</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header class="navbar scrolled" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span class="logo-text">Getham<span
+                        class="logo-accent">Hotel</span></span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="rooms.html" class="nav-link active">Rooms</a>
+                <a href="login.html" class="nav-link" id="nav-login">Login</a>
+                <a href="#" class="nav-link" id="nav-logout" style="display:none;" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section rooms bg-light" style="padding-top: 150px;">
+        <div class="container">
+            <div class="section-header text-center">
+                <p class="section-subtitle">Reserve Your Stay</p>
+                <h2 class="section-title">Available Rooms</h2>
+            </div>
+            <div class="grid rooms-grid" id="rooms-container">
+                <!-- Rooms loaded via JS -->
+            </div>
+        </div>
+    </section>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('rooms-container');
+            try {
+                const res = await fetch('/rooms');
+                if (res.ok) {
+                    const rooms = await res.json();
+                    container.innerHTML = rooms.map(room => `
+                        <div class="card room-card">
+                            <div class="card-img">
+                                <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop" alt="Room">
+                            </div>
+                            <div class="card-content">
+                                <h3>Room ${room.number} (${room.type})</h3>
+                                <p>Price: $${room.price} / night</p>
+                                <p>Status: <strong style="color:${room.available ? 'green' : 'red'}">${room.available ? 'Available' : 'Booked'}</strong></p>
+                                <div class="card-footer">
+                                    ${room.available ? `<button onclick="bookRoom(${room.id}, ${room.price})" class="btn btn-outline btn-sm">Book</button>` : `<button class="btn btn-outline btn-sm" disabled style="opacity:0.5">Unavailable</button>`}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        function bookRoom(id, price) {
+            const token = localStorage.getItem('jwt');
+            if (!token) {
+                alert('Please login to book a room.');
+                window.location.href = 'login.html';
+                return;
+            }
+            localStorage.setItem('bookingRoomId', id);
+            localStorage.setItem('bookingRoomPrice', price);
+            window.location.href = 'booking.html';
+        }
+    </script>
+</body>
+
+</html>
