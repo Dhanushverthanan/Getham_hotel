@@ -1,10 +1,9 @@
 target/
 .env
-
 .idea/
 .vscode/
 
 *.log
 
-src/main/resources/application-dev.properties
-backend/src/main/resources/application.dev.properties
+application-dev.properties
+
