@@ -1,6 +1,9 @@
 target/
 .env
-application.properties
+
 .idea/
 .vscode/
+
 *.log
+
+src/main/resources/application-dev.properties
