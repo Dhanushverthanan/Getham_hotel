@@ -121,6 +121,14 @@
                     <input type="password" id="reg-password" required>
                 </div>
                 <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="reg-phone">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="form-group">
                     <label>Role Code (Optional)</label>
                     <input type="text" id="reg-role" placeholder="Leave empty for USER">
                 </div>
@@ -173,6 +181,8 @@
             e.preventDefault();
             const u = document.getElementById('reg-username').value;
             const p = document.getElementById('reg-password').value;
+            const phone = document.getElementById('reg-phone').value;
+            const email = document.getElementById('reg-email').value;
             let role = document.getElementById('reg-role').value;
             if (role !== 'ADMIN') role = 'USER';
 
@@ -180,7 +190,7 @@
                 const res = await fetch('/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p, role: role })
+                    body: JSON.stringify({ username: u, password: p, phone: phone, email: email, role: role })
                 });
                 if (res.ok) {
                     document.getElementById('register-success').innerText = "Registration successful! You can now login.";
