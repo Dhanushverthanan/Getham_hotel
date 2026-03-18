@@ -103,13 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwt');
     const role = localStorage.getItem('role');
     const loginLink = document.getElementById('nav-login');
-    const adminLoginLink = document.getElementById('nav-admin-login');
     const logoutLink = document.getElementById('nav-logout');
     const adminLink = document.getElementById('nav-admin');
 
     if (token) {
         if (loginLink) loginLink.style.display = 'none';
-        if (adminLoginLink) adminLoginLink.style.display = 'none';
         if (logoutLink) logoutLink.style.display = 'inline-block';
         if (role === 'ADMIN' && adminLink) adminLink.style.display = 'inline-block';
     }
