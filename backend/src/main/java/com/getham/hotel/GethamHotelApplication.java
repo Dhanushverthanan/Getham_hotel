@@ -21,7 +21,7 @@ public class GethamHotelApplication {
     @Bean
     public CommandLineRunner initData(RoomRepository roomRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.count() == 0) {
+            if (userRepository.findByUsername("admin").isEmpty()) {
                 User admin = new User();
                 admin.setUsername("admin");
                 admin.setPassword(passwordEncoder.encode("admin"));
