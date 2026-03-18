@@ -2,6 +2,7 @@ package com.getham.hotel.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "bookings")
@@ -17,10 +18,12 @@ public class Booking {
     @Column(nullable = false)
     private Long roomId;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "DATE", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkIn;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "DATE", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkOut;
 
     @Column(nullable = false)

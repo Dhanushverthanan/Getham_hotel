@@ -30,6 +30,11 @@
             <div class="section-header text-center">
                 <p class="section-subtitle">Reserve Your Stay</p>
                 <h2 class="section-title">Available Rooms</h2>
+                <div style="margin-top: 20px;">
+                    <input type="date" id="search-checkin" style="padding: 8px; margin-right: 10px;">
+                    <input type="date" id="search-checkout" style="padding: 8px; margin-right: 10px;">
+                    <button onclick="searchRooms()" class="btn btn-primary" style="padding: 8px 16px;">Search</button>
+                </div>
             </div>
             <div class="grid rooms-grid" id="rooms-container">
                 <!-- Rooms loaded via JS -->
@@ -39,30 +44,55 @@
 
     <script src="js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+        async function loadRooms(checkIn, checkOut) {
             const container = document.getElementById('rooms-container');
+            const API = "https://getham-hotel.onrender.com";
+            let url = API + '/rooms';
+            if (checkIn && checkOut) {
+                url = API + '/rooms/available?checkIn=' + checkIn + '&checkOut=' + checkOut;
+            }
             try {
-                const res = await fetch('/rooms');
+                const res = await fetch(url);
                 if (res.ok) {
                     const rooms = await res.json();
-                    container.innerHTML = rooms.map(room => `
+                    container.innerHTML = rooms.map(room => {
+                        let img = 'images/room1.jpg';
+                        if (room.type === 'Deluxe') img = 'images/room1.jpg';
+                        else if (room.type === 'Suite') img = 'images/room2.jpg';
+                        else if (room.type === 'Standard' || room.type === 'Villa') img = 'images/room3.jpg';
+
+                        return `
                         <div class="card room-card">
                             <div class="card-img">
-                               <img src="images/room1.jpg" alt="Room">
+                               <img src="${img}" alt="${room.type}">
                              </div>
                             <div class="card-content">
                                 <h3>Room ${room.number} (${room.type})</h3>
-                                <p>Price: $${room.price} / night</p>
+                                <p>Price: ₹${room.price} / night</p>
                                 <p>Status: <strong style="color:${room.available ? 'green' : 'red'}">${room.available ? 'Available' : 'Booked'}</strong></p>
                                 <div class="card-footer">
                                     ${room.available ? `<button onclick="bookRoom(${room.id}, ${room.price})" class="btn btn-outline btn-sm">Book</button>` : `<button class="btn btn-outline btn-sm" disabled style="opacity:0.5">Unavailable</button>`}
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             } catch (e) { console.error(e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRooms();
         });
+
+        function searchRooms() {
+            const ci = document.getElementById('search-checkin').value;
+            const co = document.getElementById('search-checkout').value;
+            if(!ci || !co) { alert("Please select dates"); return; }
+            localStorage.setItem('bookingCheckIn', ci);
+            localStorage.setItem('bookingCheckOut', co);
+            loadRooms(ci, co);
+        }
 
         function bookRoom(id, price) {
             const token = localStorage.getItem('jwt');

@@ -59,7 +59,7 @@
 
     <div class="payment-container">
         <h2>Payment Details</h2>
-        <p style="margin: 20px 0; font-size: 1.2rem;">Amount Due: $<strong id="due-amount">0.00</strong></p>
+        <p style="margin: 20px 0; font-size: 1.2rem;">Amount Due: ₹<strong id="due-amount">0.00</strong></p>
 
         <div class="payment-options">
             <div class="payment-option active" onclick="selectType('CARD', this)">Credit Card</div>
@@ -87,8 +87,9 @@
         }
 
         async function processPayment() {
+            const API = "https://getham-hotel.onrender.com";
             try {
-                const res = await fetch('/payment', {
+                const res = await fetch(API + '/payment', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -157,23 +157,24 @@
         async function loadData() {
             const token = localStorage.getItem('jwt');
             const headers = { 'Authorization': 'Bearer ' + token };
+            const API = "https://getham-hotel.onrender.com";
 
             try {
                 // Bookings
-                const bRes = await fetch('/admin/bookings', { headers });
+                const bRes = await fetch(API + '/admin/bookings', { headers });
                 if (bRes.ok) {
                     const bookings = await bRes.json();
                     document.getElementById('bookings-table').innerHTML = bookings.map(b =>
-                        `<tr><td>${b.id}</td><td>${b.userId}</td><td>${b.roomId}</td><td>$${b.totalPrice}</td><td>${b.status}</td></tr>`
+                        `<tr><td>${b.id}</td><td>${b.userId}</td><td>${b.roomId}</td><td>₹${b.totalPrice}</td><td>${b.status}</td></tr>`
                     ).join('');
                 }
 
                 // Payments
-                const pRes = await fetch('/payment', { headers });
+                const pRes = await fetch(API + '/payment', { headers });
                 if (pRes.ok) {
                     const payments = await pRes.json();
                     document.getElementById('payments-table').innerHTML = payments.map(p =>
-                        `<tr><td>${p.id}</td><td>${p.bookingId}</td><td>$${p.amount}</td><td>${p.paymentType}</td><td>${p.status}</td></tr>`
+                        `<tr><td>${p.id}</td><td>${p.bookingId}</td><td>₹${p.amount}</td><td>${p.paymentType}</td><td>${p.status}</td></tr>`
                     ).join('');
                 }
             } catch (e) { console.error(e); }
@@ -187,8 +188,9 @@
                 price: parseFloat(document.getElementById('r-price').value),
                 available: true
             };
+            const API = "https://getham-hotel.onrender.com";
             try {
-                const res = await fetch('/rooms', {
+                const res = await fetch(API + '/rooms', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jwt') },
                     body: JSON.stringify(payload)
@@ -203,8 +205,9 @@
         document.getElementById('del-room-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('del-id').value;
+            const API = "https://getham-hotel.onrender.com";
             try {
-                const res = await fetch('/rooms/' + id, {
+                const res = await fetch(API + '/rooms/' + id, {
                     method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });

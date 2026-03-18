@@ -128,10 +128,6 @@
                     <label>Email</label>
                     <input type="email" id="reg-email" required>
                 </div>
-                <div class="form-group">
-                    <label>Role Code (Optional)</label>
-                    <input type="text" id="reg-role" placeholder="Leave empty for USER">
-                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Register</button>
             </form>
             <div class="auth-switch" onclick="toggleAuth()">Already have an account? Login</div>
@@ -156,9 +152,10 @@
             e.preventDefault();
             const u = document.getElementById('login-username').value;
             const p = document.getElementById('login-password').value;
+            const API = "https://getham-hotel.onrender.com";
 
             try {
-                const res = await fetch('/auth/login', {
+                const res = await fetch(API + '/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: u, password: p })
@@ -183,14 +180,13 @@
             const p = document.getElementById('reg-password').value;
             const phone = document.getElementById('reg-phone').value;
             const email = document.getElementById('reg-email').value;
-            let role = document.getElementById('reg-role').value;
-            if (role !== 'ADMIN') role = 'USER';
+            const API = "https://getham-hotel.onrender.com";
 
             try {
-                const res = await fetch('/auth/register', {
+                const res = await fetch(API + '/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p, phone: phone, email: email, role: role })
+                    body: JSON.stringify({ username: u, password: p, phone: phone, email: email, role: "USER" })
                 });
                 if (res.ok) {
                     document.getElementById('register-success').innerText = "Registration successful! You can now login.";

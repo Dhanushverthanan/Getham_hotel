@@ -43,11 +43,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-
+                .cors(org.springframework.security.config.Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/rooms").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/rooms/**").permitAll()
                         .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**", "/rooms.html",
                                 "/booking.html", "/login.html", "/admin.html", "/payment.html")
                         .permitAll()
@@ -56,7 +56,6 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        http.cors();
         return http.build();
     }
     @Bean

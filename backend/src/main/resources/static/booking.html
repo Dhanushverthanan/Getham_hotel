@@ -65,7 +65,7 @@
                 <label>Check Out Date</label>
                 <input type="date" id="checkout" required>
             </div>
-            <p style="margin-bottom: 20px; font-weight: bold;">Est. Total: $<span id="total-price">0</span></p>
+            <p style="margin-bottom: 20px; font-weight: bold;">Est. Total: ₹<span id="total-price">0</span></p>
             <button type="submit" class="btn btn-primary" style="width:100%">Confirm Booking</button>
         </form>
     </div>
@@ -82,6 +82,14 @@
 
         document.getElementById('checkout').addEventListener('change', calculateTotal);
         document.getElementById('checkin').addEventListener('change', calculateTotal);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ci = localStorage.getItem('bookingCheckIn');
+            const co = localStorage.getItem('bookingCheckOut');
+            if (ci) document.getElementById('checkin').value = ci;
+            if (co) document.getElementById('checkout').value = co;
+            calculateTotal();
+        });
 
         function calculateTotal() {
             const inDate = new Date(document.getElementById('checkin').value);
@@ -100,11 +108,12 @@
             const checkIn = document.getElementById('checkin').value;
             const checkOut = document.getElementById('checkout').value;
             const total = document.getElementById('total-price').innerText;
+            const API = "https://getham-hotel.onrender.com";
 
             if (total === "0" || !total) { alert("Invalid dates"); return; }
 
             try {
-                const res = await fetch('/booking', {
+                const res = await fetch(API + '/booking', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
