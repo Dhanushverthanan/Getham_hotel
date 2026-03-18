@@ -19,8 +19,10 @@ public class User {
     @Column(nullable = false)
     private String role; // "ADMIN" or "USER"
 
+    @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = false)
     private String email;
 
     public Long getId() {
