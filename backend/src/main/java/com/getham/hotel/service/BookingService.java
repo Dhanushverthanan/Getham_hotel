@@ -23,4 +23,8 @@ public class BookingService {
         booking.setStatus("CONFIRMED");
         return bookingRepository.save(booking);
     }
+
+    public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
+    }
 }

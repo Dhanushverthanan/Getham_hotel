@@ -51,7 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**", "/rooms.html",
                                 "/booking.html", "/login.html", "/admin.html", "/payment.html")
                         .permitAll()
-                        .requestMatchers("/admin/**").authenticated() // Should ideally check for ADMIN role
+                        .requestMatchers("/booking/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

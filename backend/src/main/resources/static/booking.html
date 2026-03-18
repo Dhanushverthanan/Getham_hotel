@@ -48,6 +48,7 @@
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="rooms.html" class="nav-link">Rooms</a>
+                <a href="admin.html" class="nav-link" id="nav-admin" style="display:none;">Admin</a>
                 <a href="#" class="nav-link" id="nav-logout" onclick="logout()">Logout</a>
             </nav>
         </div>
@@ -126,9 +127,11 @@
                     const booking = await res.json();
                     localStorage.setItem('paymentBookingId', booking.id);
                     localStorage.setItem('paymentAmount', total);
+                    alert("Booking initiated successfully! Proceeding to Payment window.");
                     window.location.href = 'payment.html';
                 } else {
-                    document.getElementById('booking-msg').innerHTML = "<span style='color:red'>Booking failed.</span>";
+                    const err = await res.text();
+                    document.getElementById('booking-msg').innerHTML = "<span style='color:red'>Booking failed: " + err + "</span>";
                 }
             } catch (e) { console.error(e); }
         });

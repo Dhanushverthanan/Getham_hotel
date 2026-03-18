@@ -28,6 +28,16 @@ public class RoomService {
         return roomRepository.findAvailableRooms(checkIn, checkOut);
     }
 
+    public Room updateRoom(Long id, Room updatedRoom) {
+        return roomRepository.findById(id).map(room -> {
+            room.setNumber(updatedRoom.getNumber());
+            room.setType(updatedRoom.getType());
+            room.setPrice(updatedRoom.getPrice());
+            room.setAvailable(updatedRoom.getAvailable());
+            return roomRepository.save(room);
+        }).orElseThrow(() -> new RuntimeException("Room not found"));
+    }
+
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);
     }

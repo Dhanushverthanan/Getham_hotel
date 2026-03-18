@@ -19,6 +19,7 @@
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="rooms.html" class="nav-link active">Rooms</a>
+                <a href="admin.html" class="nav-link" id="nav-admin" style="display:none;">Admin</a>
                 <a href="login.html" class="nav-link" id="nav-login">Login</a>
                 <a href="#" class="nav-link" id="nav-logout" style="display:none;" onclick="logout()">Logout</a>
             </nav>
@@ -36,6 +37,7 @@
                     <button onclick="searchRooms()" class="btn btn-primary" style="padding: 8px 16px;">Search</button>
                 </div>
             </div>
+            <div id="loading" style="display:none; text-align:center; padding: 20px; font-size: 18px; color: #666;">Loading available rooms...</div>
             <div class="grid rooms-grid" id="rooms-container">
                 <!-- Rooms loaded via JS -->
             </div>
@@ -46,13 +48,17 @@
     <script>
         async function loadRooms(checkIn, checkOut) {
             const container = document.getElementById('rooms-container');
+            const loading = document.getElementById('loading');
             const API = "https://getham-hotel.onrender.com";
             let url = API + '/rooms';
             if (checkIn && checkOut) {
                 url = API + '/rooms/available?checkIn=' + checkIn + '&checkOut=' + checkOut;
             }
+            container.innerHTML = '';
+            loading.style.display = 'block';
             try {
                 const res = await fetch(url);
+                loading.style.display = 'none';
                 if (res.ok) {
                     const rooms = await res.json();
                     container.innerHTML = rooms.map(room => {

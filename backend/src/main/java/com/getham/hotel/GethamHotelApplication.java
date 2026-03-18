@@ -6,6 +6,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import com.getham.hotel.entity.Room;
 import com.getham.hotel.repository.RoomRepository;
+import com.getham.hotel.entity.User;
+import com.getham.hotel.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class GethamHotelApplication {
@@ -16,8 +19,19 @@ public class GethamHotelApplication {
     }
 
     @Bean
-    public CommandLineRunner initData(RoomRepository roomRepository) {
+    public CommandLineRunner initData(RoomRepository roomRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
+            if (userRepository.count() == 0) {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setPassword(passwordEncoder.encode("admin"));
+                admin.setRole("ADMIN");
+                admin.setEmail("admin@getham.com");
+                admin.setPhone("0000000000");
+                userRepository.save(admin);
+                System.out.println("Default ADMIN account initialized: admin / admin");
+            }
+
             if (roomRepository.count() == 0) {
                 Room r1 = new Room();
                 r1.setNumber("101");

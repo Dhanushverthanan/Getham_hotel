@@ -4,49 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Getham Hotel | Admin Dashboard</title>
+    <title>Getham Hotel | Admin Pro Dashboard</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .admin-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 120px auto 50px;
             padding: 20px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-        }
-
         .panel {
             background: #fff;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
         }
 
         .panel h3 {
             margin-bottom: 20px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            color: var(--color-bg-dark);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
             font-size: 14px;
         }
 
-        th,
-        td {
-            padding: 12px;
+        th, td {
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #fcfcfc;
+            color: #555;
+            font-weight: 600;
         }
 
         .form-group {
@@ -55,7 +55,68 @@
 
         .form-group input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-sm-del {
+            color: red;
+            border: 1px solid red;
+            background: transparent;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-sm-del:hover {
+            background: red;
+            color: white;
+        }
+
+        .btn-sm-action {
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            background: transparent;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-right: 5px;
+        }
+
+        .btn-sm-action:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #fdfaf5;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            border: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .stat-card h2 {
+            margin: 0;
+            color: var(--color-primary);
+            font-size: 28px;
         }
     </style>
 </head>
@@ -64,7 +125,7 @@
     <header class="navbar scrolled">
         <div class="container nav-container">
             <a href="index.html" class="logo"><span class="logo-text">Getham<span
-                        class="logo-accent">Admin</span></span></a>
+                        class="logo-accent">Admin Pro</span></span></a>
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="#" class="nav-link" onclick="logout()">Logout</a>
@@ -73,74 +134,118 @@
     </header>
 
     <div class="container admin-container">
-        <h2 style="margin-bottom: 30px;">Admin Dashboard</h2>
+        <h2 style="margin-bottom: 30px;">Dashboard Analytics</h2>
 
-        <div class="dashboard-grid">
-            <div class="panel">
-                <h3>Add New Room</h3>
-                <form id="add-room-form">
-                    <div class="form-group">
-                        <label>Room Number</label>
-                        <input type="text" id="r-number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Room Type</label>
-                        <input type="text" id="r-type" required placeholder="e.g. Deluxe">
-                    </div>
-                    <div class="form-group">
-                        <label>Price</label>
-                        <input type="number" id="r-price" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%">Add Room</button>
-                    <p id="room-msg" style="margin-top: 10px; font-size:12px;"></p>
-                </form>
-
-                <h3 style="margin-top: 40px;">Delete Room</h3>
-                <form id="del-room-form">
-                    <div class="form-group">
-                        <label>Room ID</label>
-                        <input type="number" id="del-id" required>
-                    </div>
-                    <button type="submit" class="btn btn-outline"
-                        style="width:100%; color:red; border-color:red;">Delete Room</button>
-                    <p id="del-msg" style="margin-top: 10px; font-size:12px;"></p>
-                </form>
-            </div>
-
-            <div class="panel">
-                <h3>Recent Bookings</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>User ID</th>
-                            <th>Room ID</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookings-table">
-                        <!-- Loaded via JS -->
-                    </tbody>
-                </table>
-
-                <h3 style="margin-top: 40px;">Payments</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Booking ID</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="payments-table">
-                        <!-- Loaded via JS -->
-                    </tbody>
-                </table>
+        <!-- Stats Panel -->
+        <div class="panel">
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total Rooms</h3><h2 id="s-rooms">0</h2></div>
+                <div class="stat-card"><h3>Total Bookings</h3><h2 id="s-bookings">0</h2></div>
+                <div class="stat-card"><h3>Active Bookings</h3><h2 id="s-active">0</h2></div>
+                <div class="stat-card"><h3>Total Users</h3><h2 id="s-users">0</h2></div>
+                <div class="stat-card"><h3>Total Revenue</h3><h2>₹<span id="s-revenue">0</span></h2></div>
             </div>
         </div>
+
+        <!-- Revenue Report -->
+        <div class="panel">
+            <h3>Monthly Revenue Report</h3>
+            <table>
+                <thead>
+                    <tr><th>Fiscal Month</th><th>Total Revenue (₹)</th></tr>
+                </thead>
+                <tbody id="revenue-table"></tbody>
+            </table>
+        </div>
+
+        <!-- Rooms Panel -->
+        <div class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="border:none; margin:0; padding:0;">Manage Rooms</h3>
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-room-form').style.display='block'">+ Add Room</button>
+            </div>
+            
+            <form id="add-room-form" style="display:none; margin: 20px 0; padding:20px; background:#fafafa; border-radius:8px; border: 1px solid #eee;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group"><input type="text" id="r-number" placeholder="Room No. (e.g. 101)" required></div>
+                    <div class="form-group"><input type="text" id="r-type" placeholder="Type (e.g. Deluxe, Suite)" required></div>
+                    <div class="form-group"><input type="number" id="r-price" placeholder="Price per night (₹)" required></div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('add-room-form').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Room</button>
+                </div>
+            </form>
+
+            <table style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Number</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="rooms-table"></tbody>
+            </table>
+        </div>
+
+        <!-- Bookings Panel -->
+        <div class="panel">
+            <h3>Booking History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Room ID</th>
+                        <th>Dates (In - Out)</th>
+                        <th>Total (₹)</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-table"></tbody>
+            </table>
+        </div>
+
+        <!-- Users Panel -->
+        <div class="panel">
+            <h3>Registered Users</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table"></tbody>
+            </table>
+        </div>
+
+        <!-- Payments Panel -->
+        <div class="panel">
+            <h3>Payments Ledger</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Booking ID</th>
+                        <th>Amount (₹)</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-table"></tbody>
+            </table>
+        </div>
+
     </div>
 
     <script src="js/main.js"></script>
@@ -148,33 +253,93 @@
         document.addEventListener('DOMContentLoaded', () => {
             const role = localStorage.getItem('role');
             if (role !== 'ADMIN') {
-                alert('Access Denied');
+                alert('Access Denied. Administrator clearance required.');
                 window.location.href = 'index.html';
             }
             loadData();
         });
 
-        async function loadData() {
-            const token = localStorage.getItem('jwt');
-            const headers = { 'Authorization': 'Bearer ' + token };
-            const API = "https://getham-hotel.onrender.com";
+        const API = "https://getham-hotel.onrender.com";
+        const getHeaders = () => ({ 'Authorization': 'Bearer ' + localStorage.getItem('jwt'), 'Content-Type': 'application/json' });
 
+        const monthNames = ["Undefined", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        async function loadData() {
             try {
-                // Bookings
-                const bRes = await fetch(API + '/admin/bookings', { headers });
-                if (bRes.ok) {
-                    const bookings = await bRes.json();
-                    document.getElementById('bookings-table').innerHTML = bookings.map(b =>
-                        `<tr><td>${b.id}</td><td>${b.userId}</td><td>${b.roomId}</td><td>₹${b.totalPrice}</td><td>${b.status}</td></tr>`
+                // Load Stats
+                const sRes = await fetch(API + '/admin/stats', { headers: getHeaders() });
+                if (sRes.ok) {
+                    const stats = await sRes.json();
+                    document.getElementById('s-rooms').innerText = stats.totalRooms;
+                    document.getElementById('s-bookings').innerText = stats.totalBookings;
+                    document.getElementById('s-active').innerText = stats.activeBookings;
+                    document.getElementById('s-users').innerText = stats.totalUsers;
+                    document.getElementById('s-revenue').innerText = parseFloat(stats.totalRevenue).toLocaleString();
+                }
+
+                // Load Monthly Revenue
+                const revRes = await fetch(API + '/admin/revenue', { headers: getHeaders() });
+                if (revRes.ok) {
+                    const rev = await revRes.json();
+                    document.getElementById('revenue-table').innerHTML = rev.map(r => 
+                        `<tr><td><strong style="color:var(--color-primary)">${monthNames[r[0]] || r[0]}</strong></td><td>₹${parseFloat(r[1]).toLocaleString()}</td></tr>`
                     ).join('');
                 }
 
-                // Payments
-                const pRes = await fetch(API + '/payment', { headers });
+                // Load Rooms
+                const rRes = await fetch(API + '/admin/rooms', { headers: getHeaders() });
+                if (rRes.ok) {
+                    const rooms = await rRes.json();
+                    document.getElementById('rooms-table').innerHTML = rooms.map(r =>
+                        `<tr>
+                            <td>${r.id}</td><td>${r.number}</td><td>${r.type}</td><td>₹${r.price}</td>
+                            <td><strong style="color:${r.available ? 'green' : 'red'}">${r.available ? 'Available' : 'Booked'}</strong></td>
+                            <td>
+                                <button onclick="viewCalendar(${r.id})" class="btn-sm-action">Calendar</button>
+                                <button onclick="deleteRoom(${r.id})" class="btn-sm-del">Delete</button>
+                            </td>
+                        </tr>`
+                    ).join('');
+                }
+
+                // Load Bookings History
+                const bRes = await fetch(API + '/admin/bookings', { headers: getHeaders() });
+                if (bRes.ok) {
+                    const bookings = await bRes.json();
+                    document.getElementById('bookings-table').innerHTML = bookings.map(b =>
+                        `<tr>
+                            <td>${b.id}</td><td>${b.userId}</td><td>${b.roomId}</td>
+                            <td>${b.checkIn} &rarr; ${b.checkOut}</td><td>₹${b.totalPrice}</td>
+                            <td><strong style="color:${b.status==='COMPLETED'?'green':'#f39c12'}">${b.status}</strong></td>
+                            <td>
+                                ${b.status !== 'COMPLETED' ? `<button onclick="checkoutBooking(${b.id})" class="btn-sm-action">Checkout</button>` : ''}
+                                <button onclick="deleteBooking(${b.id})" class="btn-sm-del">Delete</button>
+                            </td>
+                        </tr>`
+                    ).join('');
+                }
+
+                // Load Users
+                const uRes = await fetch(API + '/admin/users', { headers: getHeaders() });
+                if (uRes.ok) {
+                    const users = await uRes.json();
+                    document.getElementById('users-table').innerHTML = users.map(u =>
+                        `<tr>
+                            <td>${u.id}</td><td>${u.username}</td><td>${u.email}</td><td>${u.phone || 'N/A'}</td><td>${u.role}</td>
+                            <td><button onclick="deleteUser(${u.id})" class="btn-sm-del">Delete</button></td>
+                        </tr>`
+                    ).join('');
+                }
+
+                // Load Payments
+                const pRes = await fetch(API + '/payment', { headers: getHeaders() });
                 if (pRes.ok) {
                     const payments = await pRes.json();
                     document.getElementById('payments-table').innerHTML = payments.map(p =>
-                        `<tr><td>${p.id}</td><td>${p.bookingId}</td><td>₹${p.amount}</td><td>${p.paymentType}</td><td>${p.status}</td></tr>`
+                        `<tr>
+                            <td>${p.id}</td><td>${p.bookingId}</td><td>₹${p.amount}</td><td>${p.paymentType}</td>
+                            <td><strong style="color:green;">${p.status}</strong></td>
+                        </tr>`
                     ).join('');
                 }
             } catch (e) { console.error(e); }
@@ -188,35 +353,54 @@
                 price: parseFloat(document.getElementById('r-price').value),
                 available: true
             };
-            const API = "https://getham-hotel.onrender.com";
             try {
-                const res = await fetch(API + '/rooms', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jwt') },
-                    body: JSON.stringify(payload)
-                });
+                const res = await fetch(API + '/rooms', { method: 'POST', headers: getHeaders(), body: JSON.stringify(payload) });
                 if (res.ok) {
-                    document.getElementById('room-msg').innerHTML = "<span style='color:green'>Room added!</span>";
                     document.getElementById('add-room-form').reset();
-                } else document.getElementById('room-msg').innerHTML = "<span style='color:red'>Failed info.</span>";
+                    document.getElementById('add-room-form').style.display = 'none';
+                    loadData();
+                } else alert("Failed to add room.");
             } catch (e) { }
         });
 
-        document.getElementById('del-room-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('del-id').value;
-            const API = "https://getham-hotel.onrender.com";
-            try {
-                const res = await fetch(API + '/rooms/' + id, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
-                });
-                if (res.ok) {
-                    document.getElementById('del-msg').innerHTML = "<span style='color:green'>Room deleted!</span>";
-                    document.getElementById('del-room-form').reset();
-                } else document.getElementById('del-msg').innerHTML = "<span style='color:red'>Failed/Not Found.</span>";
-            } catch (e) { }
-        });
+        async function viewCalendar(id) {
+            const res = await fetch(API + '/admin/room/' + id + '/bookings', { headers: getHeaders() });
+            if(res.ok){
+                const bks = await res.json();
+                let txt = "ROOM " + id + " CALENDAR:\n========================\n\n";
+                if(bks.length === 0) txt += "No bookings tied to this room.";
+                else bks.forEach(b => txt += "[ " + b.checkIn + "  -->  " + b.checkOut + " ] (Status: " + b.status + ")\n");
+                alert(txt);
+            } else alert("Failed to fetch room calendar.");
+        }
+
+        async function checkoutBooking(id) {
+            if(!confirm("Release Room & Mark Booking #" + id + " Completed?")) return;
+            const res = await fetch(API + '/admin/checkout/' + id, { method: 'POST', headers: getHeaders() });
+            if(res.ok) loadData();
+            else alert("Failed to execute Guest Checkout.");
+        }
+
+        async function deleteRoom(id) {
+            if (!confirm('Permanently delete Room #' + id + '?')) return;
+            const res = await fetch(API + '/rooms/' + id, { method: 'DELETE', headers: getHeaders() });
+            if (res.ok) loadData();
+            else alert("Failed to delete room.");
+        }
+
+        async function deleteBooking(id) {
+            if (!confirm('Permanently delete Booking #' + id + '?')) return;
+            const res = await fetch(API + '/admin/booking/' + id, { method: 'DELETE', headers: getHeaders() });
+            if (res.ok) loadData();
+            else alert("Failed to delete booking.");
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Permanently delete User #' + id + '?')) return;
+            const res = await fetch(API + '/admin/user/' + id, { method: 'DELETE', headers: getHeaders() });
+            if (res.ok) loadData();
+            else alert("Failed to delete user.");
+        }
     </script>
 </body>
 
