@@ -8,6 +8,7 @@ public class GethamHotelApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(GethamHotelApplication.class, args);
+        System.out.println("Application started successfully");
     }
 
 }
